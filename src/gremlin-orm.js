@@ -74,6 +74,25 @@ class Gorm {
     });
   }
 
+  __graphSONToGremlinWireFormat(resp) {
+      let obj  = {};
+      obj.type = resp['@type'].split(':')[1].toLowerCase();
+      obj.id = resp['@value'].id;
+      obj.label = resp['@value'].label;
+      obj.properties = {};
+      let properties = resp['@value'].properties;
+
+      for (let key in properties){
+          obj.properties[key] = [];
+          properties[key].forEach((propObj, index) => {
+              let value = propObj['@value'].value;
+              value = (typeof value === 'object'? value['@value'] : value);
+              obj.properties[key].push({value})
+          })
+      }
+      return obj;
+  }
+
   /**
   * Converts raw gremlin data into familiar JavaScript objects
   * Adds prototype methods onto objects for further queries - each object is an instance of its Model class
@@ -89,8 +108,10 @@ class Gorm {
     }
 
     gremlinResponse.forEach((grem) => {
+      if (this.dialect === 'neptune'){
+          grem = this.__graphSONToGremlinWireFormat(grem);
+      }
       let object;
-
       if (this.checkModels) {
         // if checkModels is true (running .query with raw set to false), this may refer to a VertexModel objects
         // but data returned could be EdgeModel

@@ -1,5 +1,8 @@
 dist
 
+#webstorm
+.idea/
+
 # Logs
 logs
 *.log
