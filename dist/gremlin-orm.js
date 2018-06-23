@@ -91,7 +91,10 @@ var Gorm = function () {
   }, {
     key: 'queryRaw',
     value: function queryRaw(string, callback) {
+      var _this = this;
+
       this.client.execute(string, function (err, result) {
+        result = _this.__graphSONToGremlinWireFormat(result);
         callback(err, result);
       });
     }
@@ -129,7 +132,7 @@ var Gorm = function () {
   }, {
     key: 'familiarizeAndPrototype',
     value: function familiarizeAndPrototype(gremlinResponse) {
-      var _this = this;
+      var _this2 = this;
 
       var data = [];
       var VERTEX = void 0,
@@ -141,16 +144,16 @@ var Gorm = function () {
       }
 
       gremlinResponse.forEach(function (grem) {
-        if (_this.dialect === 'neptune') {
-          grem = _this.__graphSONToGremlinWireFormat(grem);
+        if (_this2.dialect === 'neptune') {
+          grem = _this2.__graphSONToGremlinWireFormat(grem);
         }
         var object = void 0;
-        if (_this.checkModels) {
+        if (_this2.checkModels) {
           // if checkModels is true (running .query with raw set to false), this may refer to a VertexModel objects
           // but data returned could be EdgeModel
           if (grem.type === 'vertex') object = Object.create(VERTEX);else if (grem.type === 'edge') object = Object.create(EDGE);
         } else {
-          object = Object.create(_this);
+          object = Object.create(_this2);
         }
         object.id = grem.id;
         object.label = grem.label;
@@ -161,7 +164,7 @@ var Gorm = function () {
           if (grem.outVLabel) object.outVLabel = grem.outVLabel;
         }
 
-        var currentPartition = _this.g.partition ? _this.g.partition : '';
+        var currentPartition = _this2.g.partition ? _this2.g.partition : '';
         if (grem.properties) {
           Object.keys(grem.properties).forEach(function (propKey) {
             if (propKey !== currentPartition) {
@@ -175,14 +178,14 @@ var Gorm = function () {
               // If property is defined in schema as a Date type, convert it from
               // integer date into a JavaScript Date object.
               // Otherwise, no conversion necessary for strings, numbers, or booleans
-              if (_this.g.definedVertices[grem.label]) {
-                if (_this.g.definedVertices[grem.label][propKey] && _this.g.definedVertices[grem.label][propKey].type === _this.g.DATE) {
+              if (_this2.g.definedVertices[grem.label]) {
+                if (_this2.g.definedVertices[grem.label][propKey] && _this2.g.definedVertices[grem.label][propKey].type === _this2.g.DATE) {
                   object[propKey] = new Date(property);
                 } else {
                   object[propKey] = property;
                 }
-              } else if (_this.g.definedEdges[grem.label]) {
-                if (_this.g.definedEdges[grem.label][propKey] && _this.g.definedEdges[grem.label][propKey].type === _this.g.DATE) {
+              } else if (_this2.g.definedEdges[grem.label]) {
+                if (_this2.g.definedEdges[grem.label][propKey] && _this2.g.definedEdges[grem.label][propKey].type === _this2.g.DATE) {
                   object[propKey] = new Date(property);
                 } else {
                   object[propKey] = property;
@@ -193,7 +196,7 @@ var Gorm = function () {
             }
           });
         }
-        if (_this.checkModels) {
+        if (_this2.checkModels) {
           if (grem.type === 'vertex') data[0].push(object);else data[1].push(object);
         } else data.push(object);
       });

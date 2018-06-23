@@ -70,6 +70,7 @@ class Gorm {
   */
   queryRaw(string, callback) {
     this.client.execute(string, (err, result) => {
+      result = this.__graphSONToGremlinWireFormat(result);
       callback(err, result);
     });
   }
