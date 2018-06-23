@@ -94,7 +94,9 @@ var Gorm = function () {
       var _this = this;
 
       this.client.execute(string, function (err, result) {
-        result = _this.__graphSONToGremlinWireFormat(result);
+        result = result.map(function (obj) {
+          return _this.__graphSONToGremlinWireFormat(obj);
+        });
         callback(err, result);
       });
     }
