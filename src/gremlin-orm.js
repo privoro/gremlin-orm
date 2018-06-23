@@ -69,8 +69,7 @@ class Gorm {
   * @param {function} callback Some callback function with (err, result) arguments.
   */
   queryRaw(string, callback) {
-    this.client.execute(string, (err, result) => {
-      callback(err, result);
+    this.client.execute(string, (err, result) => {callback(err, result);
     });
   }
 
@@ -84,11 +83,11 @@ class Gorm {
 
       for (let key in properties){
           obj.properties[key] = [];
-          properties[key].forEach((propObj, index) => {
+          properties[key].forEach(propObj => {
               let value = propObj['@value'].value;
               value = (typeof value === 'object'? value['@value'] : value);
               obj.properties[key].push({value})
-          })
+          });
       }
       return obj;
   }
@@ -108,8 +107,8 @@ class Gorm {
     }
 
     gremlinResponse.forEach((grem) => {
-      if (this.dialect === 'neptune'){
-          grem = this.__graphSONToGremlinWireFormat(grem);
+      if (this.g.dialect === 'neptune'){
+          grem = this.g.__graphSONToGremlinWireFormat(grem);
       }
       let object;
       if (this.checkModels) {

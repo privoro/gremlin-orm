@@ -107,7 +107,7 @@ var Gorm = function () {
 
       var _loop = function _loop(key) {
         obj.properties[key] = [];
-        properties[key].forEach(function (propObj, index) {
+        properties[key].forEach(function (propObj) {
           var value = propObj['@value'].value;
           value = (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? value['@value'] : value;
           obj.properties[key].push({ value: value });
@@ -141,8 +141,8 @@ var Gorm = function () {
       }
 
       gremlinResponse.forEach(function (grem) {
-        if (_this.dialect === 'neptune') {
-          grem = _this.__graphSONToGremlinWireFormat(grem);
+        if (_this.g.dialect === 'neptune') {
+          grem = _this.g.__graphSONToGremlinWireFormat(grem);
         }
         var object = void 0;
         if (_this.checkModels) {
