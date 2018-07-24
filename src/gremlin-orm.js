@@ -78,16 +78,18 @@ class Gorm {
       obj.type = resp['@type'].split(':')[1].toLowerCase();
       obj.id = resp['@value'].id;
       obj.label = resp['@value'].label;
-      obj.properties = {};
-      let properties = resp['@value'].properties;
+      if (obj.type === 'vertex'){
+        obj.properties = {};
+        let properties = resp['@value'].properties;
 
-      for (let key in properties){
-          obj.properties[key] = [];
-          properties[key].forEach(propObj => {
-              let value = propObj['@value'].value;
-              value = (typeof value === 'object'? value['@value'] : value);
-              obj.properties[key].push({value})
-          });
+        for (let key in properties){
+            obj.properties[key] = [];
+            properties[key].forEach(propObj => {
+                let value = propObj['@value'].value;
+                value = (typeof value === 'object'? value['@value'] : value);
+                obj.properties[key].push({value})
+            });
+        }
       }
       return obj;
   }
