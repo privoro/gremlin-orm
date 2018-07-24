@@ -102,20 +102,22 @@ var Gorm = function () {
       obj.type = resp['@type'].split(':')[1].toLowerCase();
       obj.id = resp['@value'].id;
       obj.label = resp['@value'].label;
-      obj.properties = {};
-      var properties = resp['@value'].properties;
+      if (obj.type === 'vertex') {
+        obj.properties = {};
+        var properties = resp['@value'].properties;
 
-      var _loop = function _loop(key) {
-        obj.properties[key] = [];
-        properties[key].forEach(function (propObj) {
-          var value = propObj['@value'].value;
-          value = (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? value['@value'] : value;
-          obj.properties[key].push({ value: value });
-        });
-      };
+        var _loop = function _loop(key) {
+          obj.properties[key] = [];
+          properties[key].forEach(function (propObj) {
+            var value = propObj['@value'].value;
+            value = (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? value['@value'] : value;
+            obj.properties[key].push({ value: value });
+          });
+        };
 
-      for (var key in properties) {
-        _loop(key);
+        for (var key in properties) {
+          _loop(key);
+        }
       }
       return obj;
     }
